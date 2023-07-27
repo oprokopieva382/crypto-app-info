@@ -1,11 +1,5 @@
 import "../App.css";
-
-export const Pagination = ({
-  totalPosts,
-  postsPerPage,
-  setCurrentPage,
-  currentPage,
-}) => {
+export const Pagination = ({ totalPosts, postsPerPage, setCurrentPage, currentPage }) => {
   const pages = [];
 
   for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) {
@@ -13,17 +7,15 @@ export const Pagination = ({
   }
   return (
     <div className="pagination">
-      {pages.map((page, index) => {
-        return (
-          <button
-            key={index}
-            onClick={() => setCurrentPage(page)}
-            className={page === currentPage ? "active" : ""}
-          >
-            {page}
-          </button>
-        );
-      })}
+      {pages.map((p, i) => (
+        <button
+          onClick={() => setCurrentPage(p)}
+          key={i}
+          className={p === currentPage ? "active": ""}
+        >
+          {p}
+        </button>
+      ))}
     </div>
   );
 };
