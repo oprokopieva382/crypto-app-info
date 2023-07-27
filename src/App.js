@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { useState, useEffect } from "react";
 
-function App() {
+import axios from "axios";
+import { CryptoList } from "./components/CryptoList";
+import { Pagination } from "./components/Pagination";
+
+export const App = () => {
+  const [coinData, setCoinData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage, setPostsPerPage] = useState(8);
+
+  const lastPostIndex = currentPage * postsPerPage;
+  const firstPostIndex = lastPostIndex - postsPerPage;
+
+  let currentPost = coinData.slice(firstPostIndex, lastPostIndex);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(
+        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false"
+      );
+      setCoinData(response.data);
+      console.log(response.data);
+    };
+    fetchData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <h1>Crypto Gallery</h1>
+      <CryptoList coinData={currentPost} />
+      <Pagination
+        postsPerPage={postsPerPage}
+        totalPosts={coinData.length}
+        setCurrentPage={setCurrentPage}
+        currentPage={currentPage}
+      />
     </div>
   );
-}
-
-export default App;
+};
