@@ -1,28 +1,32 @@
+import React, { useEffect, useState } from "react";
 import "./App.css";
-import React, { useState, useEffect } from "react";
 import axios from "axios";
-import CryptoList from "./components/CryptoList";
+import { CryptoList } from "./components/CryptoList";
 import { Pagination } from "./components/Pagination";
 
 export const App = () => {
   const [coinsData, setCoinsData] = useState([]);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage, setPostsPerPage] = useState(8);
+  const[currentPage, setCurrentPage]= useState(1)
+  const[countPerPage, setCountPerPage]=useState(8)
 
+  const lastIndex = currentPage*countPerPage
+  const firstIndex = lastIndex-countPerPage
 
-  const lastIndex = currentPage * postsPerPage;  
-  const firstIndex = lastIndex - postsPerPage;
+  const totalCrypto = coinsData.length
 
-  const currentPosts = coinsData.slice(firstIndex, lastIndex)
+  const currentPost = coinsData.slice(firstIndex, lastIndex)
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get(
-        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false"
-      );
-      setCoinsData(response.data);
-      console.log(response.data);
+      try {
+        const response = await axios.get(
+          "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false"
+        );
+        setCoinsData(response.data)
+      } catch (e) {
+        console.log(e.message);
+      }
     };
     fetchData();
   }, []);
@@ -30,12 +34,12 @@ export const App = () => {
   return (
     <div className="app">
       <h1>Crypto Gallery</h1>
-      <CryptoList coinsData={currentPosts} />
+      <CryptoList coinsData={currentPost} />
       <Pagination
-        setCurrentPage={setCurrentPage}
-        totalPosts={coinsData.length}
-        postsPerPage={postsPerPage}
+        totalCrypto={totalCrypto}
+        countPerPage={countPerPage}
         currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
     </div>
   );
